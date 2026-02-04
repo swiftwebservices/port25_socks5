@@ -1,0 +1,36 @@
+import smtplib
+from email.mime.text import MIMEText
+import socket
+import socks  # Requires PySocks: pip install PySocks
+
+# Sample script for utilizing Port 25 SOCKS5 proxy for email sending
+
+# Placeholder values - replace with your own
+proxy_host = 'your_socks5_proxy_host'  # e.g., from Swift MailBase
+proxy_port = 1080  # SOCKS5 port (email traffic proxies through this)
+smtp_server = 'smtp.example.com'
+smtp_port = 25
+from_email = 'your_email@example.com'
+to_email = 'recipient@example.com'
+username = 'your_username'
+password = 'your_password'
+
+# Set up SOCKS5 proxy
+socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+socket.socket = socks.socksocket
+
+# Create email message
+msg = MIMEText('This is a test email sent via SOCKS5 proxy on port 25.')
+msg['Subject'] = 'Test Email via Proxy'
+msg['From'] = from_email
+msg['To'] = to_email
+
+# Send email
+try:
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.login(username, password)
+    server.sendmail(from_email, [to_email], msg.as_string())
+    server.quit()
+    print('Email sent successfully via SOCKS5 proxy!')
+except Exception as e:
+    print(f'Error sending email: {e}')
